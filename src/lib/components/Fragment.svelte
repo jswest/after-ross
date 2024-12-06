@@ -12,11 +12,6 @@
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.onload = () => {
-        console.log("Image loaded successfully:", {
-          width: img.width,
-          height: img.height,
-          complete: img.complete,
-        });
         resolve(img);
       };
       img.onerror = (e) => {
@@ -64,11 +59,12 @@
     `;
 
     const blob = new Blob([markup], { type: "image/svg+xml" });
-    const text = await blob.text();
     const img = await imagize(blob);
+    img.crossOrigin = "anonymous";
 
     context.drawImage(img, 0, 0, width, height);
-    return canvas.toDataURL("image/png");
+    const url = canvas.toDataURL("image/png");
+    return url;
   }
 </script>
 
@@ -83,17 +79,8 @@
     on:click={async () => {
       url = await canvasize();
       if (navigator.share) {
-        // Convert data URL to blob correctly
-        const byteString = atob(url.split(",")[1]);
-        const mimeString = url.split(",")[0].split(":")[1].split(";")[0];
-
-        const ab = new ArrayBuffer(byteString.length);
-        const ia = new Uint8Array(ab);
-        for (let i = 0; i < byteString.length; i++) {
-          ia[i] = byteString.charCodeAt(i);
-        }
-
-        const blob = new Blob([ab], { type: mimeString });
+        const response = await fetch(url);
+        const blob = await response.blob();
         const file = new File([blob], `fragment-${index + 1}.png`, {
           type: "image/png",
         });
@@ -104,8 +91,8 @@
             title: `Fragment ${index + 1}`,
           });
           taken = true;
-        } catch (shareError) {
-          console.error("Share error:", shareError);
+        } catch (error) {
+          console.error("Error sharing:", error);
         }
       } else {
         const link = document.createElement("a");
