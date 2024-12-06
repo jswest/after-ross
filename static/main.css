@@ -1,0 +1,28 @@
+:root {
+  --unit: 20px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+p {
+  font-family: "Cormorant Garamond";
+  font-size: var(--unit);
+  line-height: calc(var(--unit) * 1.5);
+  margin-bottom: calc(var(--unit) * 1.5);
+}
+
+html,
+body {
+  background-color: #eefcfc;
+}
+
+.fragment-body p:first-child::first-line {
+  font-weight: 700;
+}
+.bg {
+  background-color: white;
+  padding: 10px;
+}
