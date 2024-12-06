@@ -2,6 +2,6 @@ import { sveltekit } from "@sveltejs/kit/vite";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  base: "/after-ross/",
+  base: "https://jswest.github.io/after-ross",
   plugins: [sveltekit()],
 });

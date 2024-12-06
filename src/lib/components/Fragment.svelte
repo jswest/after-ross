@@ -83,9 +83,17 @@
     on:click={async () => {
       url = await canvasize();
       if (navigator.share) {
-        // Convert data URL to blob for sharing
-        const response = await fetch(url);
-        const blob = await response.blob();
+        // Convert data URL to blob correctly
+        const byteString = atob(url.split(",")[1]);
+        const mimeString = url.split(",")[0].split(":")[1].split(";")[0];
+
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+        for (let i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i);
+        }
+
+        const blob = new Blob([ab], { type: mimeString });
         const file = new File([blob], `fragment-${index + 1}.png`, {
           type: "image/png",
         });
@@ -96,8 +104,8 @@
             title: `Fragment ${index + 1}`,
           });
           taken = true;
-        } catch (error) {
-          console.error("Error sharing:", error);
+        } catch (shareError) {
+          console.error("Share error:", shareError);
         }
       } else {
         const link = document.createElement("a");
